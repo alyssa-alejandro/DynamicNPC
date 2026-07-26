@@ -206,6 +206,7 @@ public bool IsRespawning { get; set; } = false;
 
         private void CameraRotation()
 {
+    
     // if respawning, reset to starting position and rotation
     if (IsRespawning)
     {
@@ -220,8 +221,11 @@ public bool IsRespawning { get; set; } = false;
         return;
     }
 
+    bool isLeftMouseDown = Mouse.current != null && Mouse.current.leftButton.isPressed;
+
+    if (isLeftMouseDown && _input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
     // if there is an input and camera position is not fixed
-    if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+    // if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
     {
         float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 

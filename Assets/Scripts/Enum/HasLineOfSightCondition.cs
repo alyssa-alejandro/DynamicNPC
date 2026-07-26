@@ -8,40 +8,33 @@ public partial class HasLineOfSightCondition : Condition
 {
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
     [SerializeReference] public BlackboardVariable<GameObject> Target;
-    [SerializeReference] public BlackboardVariable<LayerMask> ObstacleMask; 
+
+    // Use standard LayerMask instead of BlackboardVariable<LayerMask>
+    public LayerMask ObstacleMask = -1; // Default to all layers
 
     public override bool IsTrue()
     {
-        // 1. Safety checks: Ensure both GameObjects exist
-        if (Agent == null || Agent.Value == null || Target == null || Target.Value == null)
-        {
+        
+        GameObject selfObj = (Agent != null && Agent.Value != null) ? Agent.Value : GameObject;
+        if (selfObj == null || Target == null || Target.Value == null)
             return false;
-        }
 
-        Vector2 startPos = Agent.Value.transform.position;
-        Vector2 targetPos = Target.Value.transform.position;
+        Vector3 start = selfObj.transform.position;
+        Vector3 targetPos = Target.Value.transform.position;
+        Vector3 direction = targetPos - start;
 
-        // Check if ObstacleMask variable is set; if null, default to Everything
-        LayerMask mask = (ObstacleMask != null) ? ObstacleMask.Value : (LayerMask)~0;
-
-        // 2. Cast a line from Agent to Target against the ObstacleMask layer
-        RaycastHit2D hit = Physics2D.Linecast(startPos, targetPos, mask);
-
-        // 3. If linecast hits an obstacle layer before reaching target, line of sight is blocked
-        if (hit.collider != null)
+        Debug.DrawLine(start, targetPos, Color.red, 1.0f);
+        // Perform raycast check using ObstacleMask
+        if (Physics.Raycast(start, direction.normalized, out RaycastHit hit, direction.magnitude, ObstacleMask))
         {
-            return false; 
+            // If we hit something other than target, line of sight is blocked
+            if (hit.transform.gameObject != Target.Value && !hit.transform.IsChildOf(Target.Value.transform))
+            {
+                Debug.Log($"Line of sight blocked by {hit.transform.gameObject.name} between {selfObj.name} and {Target.Value.name}");
+                return false;
+            }
         }
-
-        // Clear line of sight!
+        Debug.Log($"Line of sight clear between {selfObj.name} and {Target.Value.name}");
         return true;
-    }
-
-    public override void OnStart()
-    {
-    }
-
-    public override void OnEnd()
-    {
     }
 }
