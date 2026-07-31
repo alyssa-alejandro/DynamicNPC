@@ -2044,7 +2044,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbe67c96a1747e048a17e43161600c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DebugUI
-  m_TelemetryTracker: {fileID: 0}
+  m_TelemetryTracker: {fileID: 1886515891}
 --- !u!4 &732499558
 Transform:
   m_ObjectHideFlags: 0
@@ -3521,7 +3521,7 @@ MonoBehaviour:
   m_CombatRadius: 15
   m_EnemyLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
 --- !u!114 &1360073756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3534,8 +3534,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1602ed919272944bab603b2368b5631, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UtilityBrain
-  m_TelemetryTracker: {fileID: 0}
-  m_PlayerTransform: {fileID: 0}
+  m_TelemetryTracker: {fileID: 1886515891}
+  m_PlayerTransform: {fileID: 1886515881}
   m_EvaluationInterval: 0.2
 --- !u!1 &1384809587
 GameObject:
@@ -4340,7 +4340,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51e8897112bbccf469fa96da795d7c37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnneagramEvaluator
-  m_TelemetryTracker: {fileID: 0}
+  m_TelemetryTracker: {fileID: 1886515891}
 --- !u!114 &1886515891
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4356,7 +4356,7 @@ MonoBehaviour:
   m_EmaAlpha: 0.5
   m_EnemyLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   m_CombatScanRadius: 12
 --- !u!1 &1998405348
 GameObject:
