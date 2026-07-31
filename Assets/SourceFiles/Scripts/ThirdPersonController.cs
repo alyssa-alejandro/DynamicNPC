@@ -14,6 +14,10 @@ namespace StarterAssets
 #endif
     public class ThirdPersonController : MonoBehaviour
     {
+        private bool _wasCrouching = false;
+        [Header("Telemetry Integration")]
+        [SerializeField] private TelemetryManager _telemetryManager;
+
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
@@ -144,6 +148,11 @@ public bool IsRespawning { get; set; } = false;
 
         private void Start()
 {
+    if (_telemetryManager == null)
+    {
+        _telemetryManager = GetComponent<TelemetryManager>();
+    }
+
     _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
 
     _hasAnimator = TryGetComponent(out _animator);
@@ -245,6 +254,25 @@ public bool IsRespawning { get; set; } = false;
 
         private void Move()
         {
+            if (_telemetryManager != null && _input != null)
+            {
+                _telemetryManager.SetCrouchState(_input.crouch);
+            }
+
+            if (_input != null && _input.crouch != _wasCrouching)
+    {
+        _wasCrouching = _input.crouch;
+
+        if (_wasCrouching)
+        {
+            Debug.Log("[Player State] Crouch Pressed (Crouching)");
+        }
+        else
+        {
+            Debug.Log("[Player State] Crouch Released (Standing)");
+        }
+    }
+
             // set target speed based on move speed, sprint speed and if sprint is pressed
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
 
@@ -420,17 +448,33 @@ public bool IsRespawning { get; set; } = false;
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
             }
         }
+
+        private void OnAttack(InputValue value)
+        {
+            if (value.isPressed)
+            {
+                // ⚡ TELEMETRY HOOK: Record Aggression Intent
+                if (_telemetryManager != null)
+                {
+                    _telemetryManager.RecordAttackIntent();
+                }
+
+                // Trigger your attack animation / weapon logic here!
+                Debug.Log("Player attacked!");
+            }
+        }
+
         public void ResetCameraRotation(float targetYaw)
-{
-    // Reset the yaw and pitch to default values (targetYaw for Y rotation, and 0 for pitch)
-    _cinemachineTargetYaw = targetYaw;
-    _cinemachineTargetPitch = 0f;
+        {
+            // Reset the yaw and pitch to default values (targetYaw for Y rotation, and 0 for pitch)
+            _cinemachineTargetYaw = targetYaw;
+            _cinemachineTargetPitch = 0f;
 
-    // Reset the camera target's rotation explicitly
-    CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch, _cinemachineTargetYaw, 0f);
+            // Reset the camera target's rotation explicitly
+            CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch, _cinemachineTargetYaw, 0f);
 
-    Debug.Log($"Camera Yaw reset to {targetYaw} degrees.");
-}
+            Debug.Log($"Camera Yaw reset to {targetYaw} degrees.");
+        }
     }
 
     

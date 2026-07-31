@@ -294,7 +294,7 @@ GameObject:
   - component: {fileID: 65182573}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -422,7 +422,7 @@ Transform:
   m_GameObject: {fileID: 74252844}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.116, y: 0.186, z: -0.5}
+  m_LocalPosition: {x: 0.08, y: 0.186, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -548,6 +548,7 @@ GameObject:
   m_Component:
   - component: {fileID: 101796387}
   - component: {fileID: 101796388}
+  - component: {fileID: 101796389}
   m_Layer: 0
   m_Name: Chest
   m_TagString: PointOfInterest
@@ -586,6 +587,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PointOfInterest
   poiType: Chest
   isExplored: 0
+--- !u!65 &101796389
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 101796386}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.1930523, y: 1.3109097, z: 1.4878025}
+  m_Center: {x: -0.49262238, y: 0.15545487, z: -0.4964609}
 --- !u!1 &164710048
 GameObject:
   m_ObjectHideFlags: 0
@@ -821,7 +843,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5633379113638269974, guid: 332df604d1fc7fd46ae4013ce9b4a5d6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1886515891}
+    - targetCorrespondingSourceObject: {fileID: 5633379113638269974, guid: 332df604d1fc7fd46ae4013ce9b4a5d6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1886515890}
   m_SourcePrefab: {fileID: 100100000, guid: 332df604d1fc7fd46ae4013ce9b4a5d6, type: 3}
 --- !u!1 &225158220
 GameObject:
@@ -1833,6 +1861,7 @@ GameObject:
   m_Component:
   - component: {fileID: 644435284}
   - component: {fileID: 644435285}
+  - component: {fileID: 644435286}
   m_Layer: 0
   m_Name: Chest (2)
   m_TagString: PointOfInterest
@@ -1871,6 +1900,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PointOfInterest
   poiType: Chest
   isExplored: 0
+--- !u!65 &644435286
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 644435283}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.1930523, y: 1.3109097, z: 1.4878025}
+  m_Center: {x: -0.49262238, y: 0.15545487, z: -0.4964609}
 --- !u!1 &649077587
 GameObject:
   m_ObjectHideFlags: 0
@@ -1964,6 +2014,51 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1072032573}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &732499556
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 732499558}
+  - component: {fileID: 732499557}
+  m_Layer: 0
+  m_Name: DebugManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &732499557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 732499556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbe67c96a1747e048a17e43161600c7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DebugUI
+  m_TelemetryTracker: {fileID: 0}
+--- !u!4 &732499558
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 732499556}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 9.94232, y: 0.555, z: -13.25446}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &738625656
 GameObject:
@@ -2183,7 +2278,7 @@ Transform:
   m_GameObject: {fileID: 797011314}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.116, y: 0.186, z: -0.5}
+  m_LocalPosition: {x: 0.08, y: 0.186, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2528,7 +2623,7 @@ Transform:
   m_GameObject: {fileID: 1066633448}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.116, y: 0.186, z: -0.5}
+  m_LocalPosition: {x: 0.08, y: 0.186, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3145,6 +3240,10 @@ GameObject:
   - component: {fileID: 1360073750}
   - component: {fileID: 1360073751}
   - component: {fileID: 1360073752}
+  - component: {fileID: 1360073756}
+  - component: {fileID: 1360073755}
+  - component: {fileID: 1360073754}
+  - component: {fileID: 1360073753}
   m_Layer: 0
   m_Name: CRobot
   m_TagString: Companion
@@ -3223,6 +3322,8 @@ MonoBehaviour:
   look: {x: 0, y: 0}
   jump: 0
   sprint: 0
+  crouch: 0
+  attack: 0
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
@@ -3315,7 +3416,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1360073740}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0038c16c34866b4f9e25c9c0dc0f7e6, type: 3}
   m_Name: 
@@ -3373,6 +3474,69 @@ MonoBehaviour:
           m_Value1: 12179048663814740239
         Name: AttackingEnemy
         m_Value: {fileID: 65182572}
+--- !u!114 &1360073753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360073740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c86766e8ea080e4683a3bbf9aaeba41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FollowPlayerAction
+  ActionName: 
+  m_BaseUtility: 0.1
+  m_FollowDistanceThreshold: 3
+  m_NormalSpeed: 3.5
+--- !u!114 &1360073754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360073740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c6d1d2318e204d44942b98801678594, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScoutPOIAction
+  ActionName: 
+  m_FieldOfViewAngle: 120
+  m_MaxSearchRadius: 30
+--- !u!114 &1360073755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360073740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0eaf91ccce15f046becfe66806c41f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DrawAggroAction
+  ActionName: 
+  m_CombatRadius: 15
+  m_EnemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
+--- !u!114 &1360073756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360073740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1602ed919272944bab603b2368b5631, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UtilityBrain
+  m_TelemetryTracker: {fileID: 0}
+  m_PlayerTransform: {fileID: 0}
+  m_EvaluationInterval: 0.2
 --- !u!1 &1384809587
 GameObject:
   m_ObjectHideFlags: 0
@@ -3527,6 +3691,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1409045522}
   - component: {fileID: 1409045523}
+  - component: {fileID: 1409045524}
   m_Layer: 0
   m_Name: Chest (1)
   m_TagString: PointOfInterest
@@ -3565,6 +3730,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PointOfInterest
   poiType: Chest
   isExplored: 0
+--- !u!65 &1409045524
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1409045521}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.1930523, y: 1.3109097, z: 1.4878025}
+  m_Center: {x: -0.49262238, y: 0.15545487, z: -0.4964609}
 --- !u!1 &1429663368
 GameObject:
   m_ObjectHideFlags: 0
@@ -4142,6 +4328,36 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8303322781246357501, guid: 332df604d1fc7fd46ae4013ce9b4a5d6, type: 3}
   m_PrefabInstance: {fileID: 208188848}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1886515890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797179640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51e8897112bbccf469fa96da795d7c37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnneagramEvaluator
+  m_TelemetryTracker: {fileID: 0}
+--- !u!114 &1886515891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797179640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79af1e410f0ce541812ac5918a6e030, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerTelemetryTracker
+  m_EmaAlpha: 0.5
+  m_EnemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  m_CombatScanRadius: 12
 --- !u!1 &1998405348
 GameObject:
   m_ObjectHideFlags: 0
@@ -4449,3 +4665,4 @@ SceneRoots:
   - {fileID: 1409045522}
   - {fileID: 644435284}
   - {fileID: 65182576}
+  - {fileID: 732499558}

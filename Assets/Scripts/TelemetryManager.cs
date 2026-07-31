@@ -1,65 +1,59 @@
 using UnityEngine;
-using Unity.Behavior; // Required for Unity Behavior Graph API
 
 public class TelemetryManager : MonoBehaviour
 {
-    [Header("References")]
-    public BehaviorGraphAgent companionAgent;
-    public Transform playerTransform;
+    [Header("EMA Tuning")]
+    [Tooltip("Lower values make the companion react slower to habit changes, higher values make it jumpy.")]
+    [SerializeField] private float m_EmaAlpha = 0.5f;
 
     [Header("Telemetry Settings")]
-    public float evalInterval = 2.0f; // Evaluate playstyle every 2 seconds
-    
-    // Telemetry Metrics
-    private float currentNoiseLevel = 0f;
-    private float explorationScore = 0f;
-    private Vector3 lastPlayerPos;
+    [SerializeField] private LayerMask m_EnemyLayer;
+    [SerializeField] private float m_CombatScanRadius = 12.0f;
 
-    public PLAYSTYLE activePlaystyle = PLAYSTYLE.BALANCED;
+    public PlayerProfile CurrentProfile { get; private set; } = new PlayerProfile();
 
-    void Start()
+    // Internal Filters
+    private EMAFilter m_AggressionFilter;
+    private EMAFilter m_StealthFilter;
+    private EMAFilter m_ExplorationFilter;
+    private EMAFilter m_CautionFilter;
+
+    // Frame Accumulators
+    private int m_ValidAttacksThisFrame;
+    private bool m_IsCrouching;
+
+    private void Awake()
     {
-        if (playerTransform != null) lastPlayerPos = playerTransform.position;
-        InvokeRepeating(nameof(EvaluateTelemetry), evalInterval, evalInterval);
+        m_AggressionFilter = new EMAFilter(m_EmaAlpha);
+        m_StealthFilter = new EMAFilter(m_EmaAlpha);
+        m_ExplorationFilter = new EMAFilter(m_EmaAlpha);
+        m_CautionFilter = new EMAFilter(m_EmaAlpha);
     }
 
-    void Update()
+    public void RecordAttackIntent()
     {
-        // 1. Calculate continuous noise/movement metric
-        if (playerTransform != null)
-        {
-            float speed = (playerTransform.position - lastPlayerPos).magnitude / Time.deltaTime;
-            currentNoiseLevel = Mathf.Clamp01(speed / 8.0f); // Fast movement = higher noise
-            lastPlayerPos = playerTransform.position;
-        }
-
-        // 2. Sync raw metric to Blackboard for real-time nodes
-        if (companionAgent != null)
-        {
-            companionAgent.SetVariableValue("PlayerNoise", currentNoiseLevel);
-        }
+        m_ValidAttacksThisFrame++;
     }
 
-    void EvaluateTelemetry()
+    public void SetCrouchState(bool isCrouching)
     {
-        // Classify long-term trend
-        if (currentNoiseLevel < 0.3f)
-        {
-            activePlaystyle = PLAYSTYLE.STEALTH;
-        }
-        else if (currentNoiseLevel > 0.6f)
-        {
-            activePlaystyle = PLAYSTYLE.AGGRESSIVE;
-        }
-        else
-        {
-            activePlaystyle = PLAYSTYLE.BALANCED;
-        }
+        m_IsCrouching = isCrouching;
+    }
 
-        // Write active profile enum/int to Blackboard
-        if (companionAgent != null)
-        {
-            companionAgent.SetVariableValue("CurrentPlaystyle", (int)activePlaystyle);
-        }
+    private void Update()
+    {
+        float dt = Time.deltaTime;
+
+        // 1. Calculate Aggression (Attacks performed WHILE enemies are nearby)
+        bool enemiesNearby = Physics.CheckSphere(transform.position, m_CombatScanRadius, m_EnemyLayer);
+        float rawAggression = (enemiesNearby && m_ValidAttacksThisFrame > 0) ? 1.0f : 0.0f;
+        CurrentProfile.AggressionEMA = m_AggressionFilter.Update(rawAggression, dt);
+
+        // 2. Calculate Stealth (Crouching state + low movement noise)
+        float rawStealth = m_IsCrouching ? 1.0f : 0.0f;
+        CurrentProfile.StealthEMA = m_StealthFilter.Update(rawStealth, dt);
+
+        // Reset accumulators
+        m_ValidAttacksThisFrame = 0;
     }
 }
