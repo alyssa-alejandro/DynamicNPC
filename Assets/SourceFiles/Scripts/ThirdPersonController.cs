@@ -32,6 +32,11 @@ namespace StarterAssets
         [Tooltip("Acceleration and deceleration")]
         public float SpeedChangeRate = 10.0f;
 
+        [Header("Attack Damage Settings")]
+        [SerializeField] private float m_AttackDamage = 25f;
+        [SerializeField] private float m_AttackRadius = 2.5f;
+        [SerializeField] private LayerMask m_EnemyLayer;
+
         public AudioClip LandingAudioClip;
         public AudioClip[] FootstepAudioClips;
         [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
@@ -78,6 +83,10 @@ namespace StarterAssets
 
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
+
+        [Header("Companion Proximity Settings")]
+        [SerializeField] private Transform m_CompanionTransform;
+        [SerializeField] private float m_ProximityRadius = 4.0f; // Distance threshold for being "close"
 
         public Vector2  LookSensitivity = new Vector2(7.5f, 5.0f);
 
@@ -178,10 +187,24 @@ public bool IsRespawning { get; set; } = false;
         private void Update()
         {
             _hasAnimator = TryGetComponent(out _animator);
+            if (TryGetComponent<PlayerHealth>(out var playerHealth) && playerHealth.IsUnderAttack)
+            {
+                // 1. Prioritize the specific enemy attacking the player, if available
+                Transform threat = playerHealth.LastAttacker != null 
+                    ? playerHealth.LastAttacker 
+                    : FindNearestEnemy();
+
+                // 2. Only check backing away if actively under attack
+                if (IsRetreatingFromEnemy(threat))
+                {
+                    _telemetryManager?.RecordBackingAway(Time.deltaTime);
+                }
+            }
 
             JumpAndGravity();
             GroundedCheck();
             Move();
+            CheckCompanionProximity();
         }
 
         private void LateUpdate()
@@ -427,6 +450,15 @@ public bool IsRespawning { get; set; } = false;
             Gizmos.DrawSphere(
                 new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z),
                 GroundedRadius);
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, m_AttackRadius);
+
+            if (m_CompanionTransform != null)
+            {
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawWireSphere(m_CompanionTransform.position, m_ProximityRadius);
+            }
         }
 
         private void OnFootstep(AnimationEvent animationEvent)
@@ -461,8 +493,89 @@ public bool IsRespawning { get; set; } = false;
 
                 // Trigger your attack animation / weapon logic here!
                 Debug.Log("Player attacked!");
+
+                PerformAttackDamage();
             }
         }
+
+        private void PerformAttackDamage()
+        {
+            // Find all colliders within range on the Enemy Layer
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position, m_AttackRadius, m_EnemyLayer);
+
+            foreach (Collider col in hitColliders)
+            {
+                // 1. Double check tag safety
+                if (!col.CompareTag("Enemy") && !col.transform.root.CompareTag("Enemy"))
+                    continue;
+
+                // 2. Fetch EnemyHealth component
+                EnemyHealth enemyHealth = col.GetComponentInParent<EnemyHealth>();
+
+                if (enemyHealth != null)
+                {
+                    enemyHealth.TakeDamage(m_AttackDamage);
+                    Debug.Log($"[PlayerAttack] Hit {col.name} for {m_AttackDamage} damage!");
+                }
+            }
+        }
+
+        private void CheckCompanionProximity()
+        {
+            if (m_CompanionTransform == null || _telemetryManager == null) return;
+
+            // Calculate distance between Player and Companion
+            float distanceToCompanion = Vector3.Distance(transform.position, m_CompanionTransform.position);
+
+            // If inside the proximity zone, feed Caution into the EMA filter
+            if (distanceToCompanion <= m_ProximityRadius)
+            {
+                _telemetryManager.RecordCompanionProximity(); 
+            }
+        }
+
+        private bool IsRetreatingFromEnemy(Transform nearestEnemy)
+        {
+            if (nearestEnemy == null) return false;
+
+            // Vector pointing from Player toward Enemy
+            Vector3 toEnemy = (nearestEnemy.position - transform.position).normalized;
+            toEnemy.y = 0; // Keep horizontal
+
+            // Get current movement vector
+            Vector3 moveDirection = new Vector3(_controller.velocity.x, 0f, _controller.velocity.z).normalized;
+
+            // Dot product between movement direction and direction toward enemy
+            // If negative, player is moving AWAY from the enemy
+            float dot = Vector3.Dot(moveDirection, toEnemy);
+
+            return dot < -0.5f; // Player is actively moving away from enemy position
+        }
+
+        private Transform FindNearestEnemy()
+        {
+            // Search within a 15-meter radius around the player
+            Collider[] hitEnemies = Physics.OverlapSphere(transform.position, 15f);
+            Transform closest = null;
+            float minDistance = float.MaxValue;
+
+            foreach (var col in hitEnemies)
+            {
+                // Check if the collider or its root object has the "Enemy" tag
+                if (col.CompareTag("Enemy") || col.transform.root.CompareTag("Enemy"))
+                {
+                    float dist = Vector3.Distance(transform.position, col.transform.position);
+                    if (dist < minDistance)
+                    {
+                        minDistance = dist;
+                        closest = col.transform;
+                    }
+                }
+            }
+
+            return closest;
+        }
+
 
         public void ResetCameraRotation(float targetYaw)
         {

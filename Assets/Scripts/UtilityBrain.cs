@@ -10,6 +10,10 @@ public class UtilityBrain : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private float m_EvaluationInterval = 0.2f; // Evaluate 5 times per second
 
+    [Header("Inertia Settings")]
+    [Tooltip("Bonus added to the currently executing action to prevent rapid switching (thrashing).")]
+    [SerializeField] private float m_ActionInertiaBonus = 0.15f;
+
     private List<UtilityAction> m_AvailableActions = new List<UtilityAction>();
     private UtilityAction m_CurrentAction;
     private float m_Timer;
@@ -52,6 +56,13 @@ public class UtilityBrain : MonoBehaviour
         foreach (UtilityAction action in m_AvailableActions)
         {
             float score = action.EvaluateUtility(profile, transform, m_PlayerTransform);
+            
+            // HYSTERESIS: Give the current action a sticky bonus so it doesn't drop easily
+            if (action == m_CurrentAction)
+            {
+                score += m_ActionInertiaBonus;
+            }
+
             LastScores[action.ActionName] = score;
 
             if (score > highestUtility)
