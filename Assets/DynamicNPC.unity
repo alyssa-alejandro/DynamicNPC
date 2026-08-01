@@ -292,10 +292,10 @@ GameObject:
   - component: {fileID: 65182575}
   - component: {fileID: 65182574}
   - component: {fileID: 65182573}
-  - component: {fileID: 65182577}
   - component: {fileID: 65182578}
   - component: {fileID: 65182580}
   - component: {fileID: 65182579}
+  - component: {fileID: 65182581}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -398,6 +398,7 @@ Transform:
   m_Children:
   - {fileID: 603140485}
   - {fileID: 2061599229}
+  - {fileID: 1663614380}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &65182578
@@ -453,6 +454,20 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &65182581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 65182572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c7a167e7276ac14682929722eef2e50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  m_MaxHealth: 100
+  m_HealthBar: {fileID: 1663614381}
 --- !u!1 &74252844
 GameObject:
   m_ObjectHideFlags: 0
@@ -1019,7 +1034,7 @@ PrefabInstance:
       addedObject: {fileID: 1886515890}
     - targetCorrespondingSourceObject: {fileID: 5633379113638269974, guid: 332df604d1fc7fd46ae4013ce9b4a5d6, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1886515900}
+      addedObject: {fileID: 1886515892}
   m_SourcePrefab: {fileID: 100100000, guid: 332df604d1fc7fd46ae4013ce9b4a5d6, type: 3}
 --- !u!1 &225158220
 GameObject:
@@ -5353,10 +5368,6 @@ MonoBehaviour:
   m_CurrentHealth: 100
   m_UnderAttackWindow: 3
   m_HealthBar: {fileID: 1559291359}
-  m_Script: {fileID: 11500000, guid: 17628737bbba8924987554bdf65553bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health
-  maximumHealth: 100
 --- !u!1 &1998405348
 GameObject:
   m_ObjectHideFlags: 0

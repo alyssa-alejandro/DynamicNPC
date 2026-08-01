@@ -69,6 +69,7 @@ public class UtilityBrain : MonoBehaviour
             {
                 highestUtility = score;
                 bestAction = action;
+                Debug.Log($"[Utility Brain] Evaluated Action: {action.ActionName}, Score: {score:F2}");
             }
         }
 

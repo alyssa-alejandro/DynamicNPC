@@ -65,31 +65,37 @@ public class DrawAggroAction : UtilityAction
 
     // 3. Locate target (prioritize enemies attacking the player)
     m_CurrentTargetEnemy = FindPriorityTarget(agent.position, player);
+    Debug.Log($"[DrawAggroAction] Found Target Enemy: {m_CurrentTargetEnemy?.name ?? "None"}");
+    
     if (m_CurrentTargetEnemy == null) return 0.0f;
 
-    // 4. Calculate Urgency Multiplier
-    float dangerMultiplier = 1.0f;
+    // 4. Calculate Combat Base Urgency
+    // ⚡ Giving a baseline score ensures combat actions win over FollowPlayerAction (0.25) when attacked
+    float baseCombatUrgency = 0.0f;
 
     if (isUnderAttack)
     {
-        dangerMultiplier += 0.5f;
+        baseCombatUrgency += 0.35f; // Guaranteed boost to outscore standard following
+        Debug.Log("[DrawAggroAction] Player is under attack! Increasing utility.");
     }
 
     if (healthPercent <= m_LowHealthThreshold)
     {
-        dangerMultiplier += (1.0f - healthPercent);
+        baseCombatUrgency += (1.0f - healthPercent) * 0.8f; // Extra urgency as HP drops
     }
 
-    // MULTIPLY the loyalist weight instead of adding fixed flat values!
-    // If loyalistWeight is low (e.g. 0.1), dangerMultiplier (1.5) only increases score to 0.15.
-    float finalUtility = loyalistWeight * dangerMultiplier;
+    // 5. Combine base urgency with personality profile weighting
+    // Even low loyalist traits (e.g., 0.1) will now score ~0.38+, cleanly beating Follow Player (0.25)
+    float finalUtility = baseCombatUrgency + (loyalistWeight * 0.3f);
+
+    Debug.Log($"[DrawAggroAction] Evaluated Utility: Base={baseCombatUrgency:F2}, Loyalist={loyalistWeight:F2}, Final={finalUtility:F2}");
 
     return Mathf.Clamp01(finalUtility);
 }
 
     public override void Execute(Transform agent, Transform player)
     {
-        // Debug.Log("[DrawAggroAction] Executing: Drawing Aggro to Protect Player");
+        Debug.Log("[DrawAggroAction] Executing: Drawing Aggro to Protect Player");
         if (m_CurrentTargetEnemy == null) return;
 
         if (m_NavAgent == null) m_NavAgent = agent.GetComponent<NavMeshAgent>();
@@ -114,20 +120,28 @@ public class DrawAggroAction : UtilityAction
 
             if (Time.time >= m_LastAttackTime + m_AttackCooldown)
             {
-                PerformAttack();
+                PerformAttack(agent);
                 m_LastAttackTime = Time.time;
             }
         }
     }
 
-    private void PerformAttack()
+    private void PerformAttack(Transform agent)
     {
         Debug.Log($"[DrawAggroAction] Intercepting {m_CurrentTargetEnemy.name} to peel off player!");
 
+        // 1. Force the enemy to target the companion!
+        if (m_CurrentTargetEnemy.TryGetComponent<EnemyAI>(out var enemyAI))
+        {
+            enemyAI.Aggro(agent); // 👈 Passes companion's transform as the new target
+        }
+
+        // 2. Deal Damage to Enemy
         if (m_CurrentTargetEnemy.TryGetComponent<EnemyHealth>(out var health))
         {
             health.TakeDamage(m_Damage);
             PlayAttackSound();
+
             if (health.IsDead)
             {
                 m_CurrentTargetEnemy = null;

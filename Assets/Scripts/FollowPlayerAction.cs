@@ -33,7 +33,7 @@ public class FollowPlayerAction : UtilityAction
 
     public override void Execute(Transform agent, Transform player)
     {
-        // Debug.Log("[FollowPlayerAction] Executing: Following Player");
+        Debug.Log("[FollowPlayerAction] Executing: Following Player");
         if (m_NavAgent == null) m_NavAgent = agent.GetComponent<NavMeshAgent>();
 
         if (m_NavAgent != null && m_NavAgent.isOnNavMesh)

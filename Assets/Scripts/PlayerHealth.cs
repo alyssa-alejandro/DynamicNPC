@@ -14,6 +14,7 @@ public class PlayerHealth : MonoBehaviour
 
     public float HealthPercentage => Mathf.Clamp01(m_CurrentHealth / m_MaxHealth);
     public bool IsUnderAttack => (Time.time - m_LastDamageTime) <= m_UnderAttackWindow;
+    public bool IsDead => m_CurrentHealth <= 0f;
 
     private void Start()
     {

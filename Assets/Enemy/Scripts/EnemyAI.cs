@@ -16,8 +16,16 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float damagePerShot = 10f;
     [SerializeField] private float shootingCooldown = 1f;
 
+    [Header("Audio Settings")]
+    [SerializeField] private AudioClip m_AttackAudioClip;
+    [Range(0f, 1f)] [SerializeField] private float m_AttackAudioVolume = 0.8f;
+
     private NavMeshAgent agent;
-    private Health playerHealth;
+    private AudioSource m_AudioSource;
+
+    private Transform currentTarget;
+    private bool isAggroedByCompanion = false;
+
 
     private Vector3 homePosition;
     private float nextShotTime;
@@ -26,6 +34,13 @@ public class EnemyAI : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         homePosition = transform.position;
+
+        if (!TryGetComponent(out m_AudioSource))
+        {
+            m_AudioSource = gameObject.AddComponent<AudioSource>();
+            m_AudioSource.spatialBlend = 1.0f; // Enable 3D sound
+            m_AudioSource.playOnAwake = false;
+        }
     }
 
     private void Start()
@@ -36,20 +51,6 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        playerHealth = player.GetComponent<Health>();
-
-        if (playerHealth == null)
-            playerHealth = player.GetComponentInParent<Health>();
-
-        if (playerHealth == null)
-            playerHealth = player.GetComponentInChildren<Health>();
-
-        if (playerHealth == null)
-        {
-            Debug.LogError(
-                $"No Health component found on {player.name}, its parent, or its children."
-            );
-        }
     }
     
     private void Update()
@@ -60,23 +61,43 @@ public class EnemyAI : MonoBehaviour
         float playerDistanceFromHome =
             Vector3.Distance(player.position, homePosition);
 
-        if (playerDistanceFromHome > territoryRadius)
+        float targetDistanceFromHome = float.MaxValue;
+        if (currentTarget != null)
+            targetDistanceFromHome = Vector3.Distance(currentTarget.position, homePosition);
+
+        if (playerDistanceFromHome > territoryRadius && targetDistanceFromHome > territoryRadius)
         {
             ReturnHome();
             return;
         }
 
-        float distanceToPlayer =
-            Vector3.Distance(transform.position, player.position);
+        if (isAggroedByCompanion && currentTarget != null)
+        {
+            float distanceToTarget =
+                Vector3.Distance(transform.position, currentTarget.position);
+                if (distanceToTarget > shootingRange)
+                {
+                    FollowTarget();
+                }
+                else
+                {
+                    AttackTarget();
+                }
+        }
 
-        if (distanceToPlayer > shootingRange)
-        {
-            FollowPlayer();
+        else {
+        float distanceToPlayer =
+                    Vector3.Distance(transform.position, player.position);
+            if (distanceToPlayer > shootingRange)
+            {
+                FollowPlayer();
+            }
+            else
+            {
+                AttackPlayer();
+            }
         }
-        else
-        {
-            AttackPlayer();
-        }
+                
     }
 
     private void FollowPlayer()
@@ -92,7 +113,7 @@ public class EnemyAI : MonoBehaviour
     {
         agent.isStopped = true;
 
-        FacePlayer();
+        FaceTarget(player);
 
         if (Time.time < nextShotTime)
             return;
@@ -101,15 +122,53 @@ public class EnemyAI : MonoBehaviour
 
         Debug.Log("Enemy shot the player.");
 
-        if (playerHealth != null)
+        if (player.TryGetComponent<PlayerHealth>(out var health))
         {
-            playerHealth.TakeDamage(damagePerShot);
+            health.TakeDamage(damagePerShot, transform);
+            PlayAttackSound();
+            if (health.IsDead)
+            {
+                player = null;
+                if (agent != null && agent.isOnNavMesh)
+                {
+                    agent.ResetPath();
+                }
+            }
         }
-        else
+    }
+
+    private void FollowTarget()
+    {
+        agent.isStopped = false;
+        agent.stoppingDistance = shootingRange * 0.8f;
+
+        // Updated every frame, so the enemy follows the moving player.
+        agent.SetDestination(currentTarget.position);
+    }
+
+    private void AttackTarget()
+    {
+        agent.isStopped = true;
+
+        FaceTarget(currentTarget);
+
+        if (Time.time < nextShotTime)
+            return;
+
+        nextShotTime = Time.time + shootingCooldown;
+
+        Debug.Log("Enemy shot the target.");
+
+        PlayAttackSound();
+            
+    }
+    
+
+    public void PlayAttackSound()
+    {
+        if (m_AttackAudioClip != null && m_AudioSource != null)
         {
-            Debug.LogWarning(
-                "Enemy cannot damage player because no Health component was found."
-            );
+            m_AudioSource.PlayOneShot(m_AttackAudioClip, m_AttackAudioVolume);
         }
     }
 
@@ -128,12 +187,14 @@ public class EnemyAI : MonoBehaviour
         agent.isStopped = false;
         agent.stoppingDistance = homeStoppingDistance;
         agent.SetDestination(homePosition);
+        isAggroedByCompanion = false;
+        currentTarget = null;
     }
 
-    private void FacePlayer()
+    private void FaceTarget(Transform target)
     {
         Vector3 direction =
-            player.position - transform.position;
+            target.position - transform.position;
 
         direction.y = 0f;
 
@@ -142,6 +203,17 @@ public class EnemyAI : MonoBehaviour
             transform.rotation =
                 Quaternion.LookRotation(direction);
         }
+    }
+
+    public void Aggro(Transform newTarget)
+    {
+        if (newTarget == null) return;
+
+        currentTarget = newTarget;
+        isAggroedByCompanion = true;
+        // aggroResetTime = Time.time + m_AggroDuration;
+
+        Debug.Log($"[EnemyAI] {gameObject.name} AGGRO SWAPPED! Now attacking: {newTarget.name}");
     }
 
     private void OnDrawGizmosSelected()
