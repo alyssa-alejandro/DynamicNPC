@@ -820,6 +820,14 @@ PrefabInstance:
       value: PlayerRobot
       objectReference: {fileID: 0}
     - target: {fileID: 2563429732134213952, guid: 332df604d1fc7fd46ae4013ce9b4a5d6, type: 3}
+      propertyPath: m_EnemyLayer.m_Bits
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2563429732134213952, guid: 332df604d1fc7fd46ae4013ce9b4a5d6, type: 3}
+      propertyPath: m_CompanionTransform
+      value: 
+      objectReference: {fileID: 1360073741}
+    - target: {fileID: 2563429732134213952, guid: 332df604d1fc7fd46ae4013ce9b4a5d6, type: 3}
       propertyPath: CinemachineCameraTarget
       value: 
       objectReference: {fileID: 2010506175}

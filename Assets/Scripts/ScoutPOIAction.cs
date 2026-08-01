@@ -76,7 +76,7 @@ public class ScoutPOIAction : UtilityAction
         Collider[] colliders = Physics.OverlapSphere(origin, m_MaxSearchRadius);
         Transform closest = null;
         float minDistance = float.MaxValue;
-        Debug.Log($"[ScoutPOIAction] Colliders found: {colliders.Length}. Searching for nearest unexplored POI within FOV and line of sight.");
+        // Debug.Log($"[ScoutPOIAction] Colliders found: {colliders.Length}. Searching for nearest unexplored POI within FOV and line of sight.");
         // Offset origin slightly upward to eye level (1.5m) so raycasts don't hit the ground
         Vector3 eyePosition = origin + Vector3.up * 1.5f;
 
@@ -91,7 +91,7 @@ public class ScoutPOIAction : UtilityAction
             }
 
             GameObject targetObj = col.gameObject;
-            Debug.Log($"[ScoutPOIAction] Evaluating POI: {targetObj.name} at position {col.transform.position}");
+            // Debug.Log($"[ScoutPOIAction] Evaluating POI: {targetObj.name} at position {col.transform.position}");
             Vector3 targetPos = col.bounds.center; // Target center of POI collider
             Vector3 direction = targetPos - eyePosition;
 

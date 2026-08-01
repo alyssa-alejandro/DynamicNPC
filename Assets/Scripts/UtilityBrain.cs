@@ -58,7 +58,7 @@ public class UtilityBrain : MonoBehaviour
             float score = action.EvaluateUtility(profile, transform, m_PlayerTransform);
             
             // HYSTERESIS: Give the current action a sticky bonus so it doesn't drop easily
-            if (action == m_CurrentAction)
+            if (action == m_CurrentAction && score > 0.0f)
             {
                 score += m_ActionInertiaBonus;
             }

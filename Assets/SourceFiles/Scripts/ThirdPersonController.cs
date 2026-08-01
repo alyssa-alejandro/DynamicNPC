@@ -522,14 +522,17 @@ public bool IsRespawning { get; set; } = false;
 
         private void CheckCompanionProximity()
         {
+            // Debug.Log("[Companion Proximity] Checking if player is close to companion...");
+            // Debug.Log($"[Companion Proximity] Companion Transform: {(m_CompanionTransform != null ? m_CompanionTransform.name : "None")}");
             if (m_CompanionTransform == null || _telemetryManager == null) return;
 
             // Calculate distance between Player and Companion
             float distanceToCompanion = Vector3.Distance(transform.position, m_CompanionTransform.position);
-
+            // Debug.Log($"[Companion Proximity] Distance to Companion: {distanceToCompanion:F2} units. Proximity Radius: {m_ProximityRadius:F2} units.");
             // If inside the proximity zone, feed Caution into the EMA filter
             if (distanceToCompanion <= m_ProximityRadius)
             {
+                // Debug.Log("[Companion Proximity] Player is within proximity radius of companion.");
                 _telemetryManager.RecordCompanionProximity(); 
             }
         }

@@ -149,35 +149,6 @@ public class DrawAggroAction : UtilityAction
             }
         }
 
-        // PRIORITY 2: Fallback to finding the nearest active enemy within sphere radius
-        Collider[] colliders = Physics.OverlapSphere(origin, m_CombatRadius, m_EnemyLayer);
-        Transform closest = null;
-        float minDistance = float.MaxValue;
-
-        // Debug.Log($"[DrawAggroAction] Found {colliders.Length} potential targets in combat radius.");
-
-        foreach (Collider col in colliders)
-        {
-            // 1. Tag Check: Ensure the object (or its root) is tagged as "Enemy"
-            if (!col.CompareTag("Enemy") && !col.transform.root.CompareTag("Enemy"))
-                continue;
-            
-            // 2. Health Check: Use GetComponentInParent for safety if colliders are on child meshes
-            EnemyHealth health = col.GetComponentInParent<EnemyHealth>();
-            if (health == null || health.IsDead)
-                continue;
-
-            // 3. Distance Check: Target the root transform of the enemy
-            Transform enemyRoot = health.transform;
-            float dist = Vector3.Distance(origin, enemyRoot.position);
-
-            if (dist < minDistance)
-            {
-                minDistance = dist;
-                closest = enemyRoot;
-            }
-        }
-
-        return closest;
+        return null;
     }
 }
