@@ -20,7 +20,7 @@ namespace StarterAssets
 
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
-        public float MoveSpeed = 2.0f;
+        public float MoveSpeed = 3.5f;
 
         [Tooltip("Sprint speed of the character in m/s")]
         public float SprintSpeed = 5.335f;
@@ -36,6 +36,8 @@ namespace StarterAssets
         [SerializeField] private float m_AttackDamage = 25f;
         [SerializeField] private float m_AttackRadius = 2.5f;
         [SerializeField] private LayerMask m_EnemyLayer;
+        [SerializeField] private AudioClip m_AttackAudioClip;
+        [Range(0f, 1f)] [SerializeField] private float m_AttackAudioVolume = 0.8f;
 
         public AudioClip LandingAudioClip;
         public AudioClip[] FootstepAudioClips;
@@ -128,6 +130,7 @@ public bool IsRespawning { get; set; } = false;
         private CharacterController _controller;
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
+        private AudioSource m_AudioSource;
 
         private const float _threshold = 0.01f;
 
@@ -152,6 +155,14 @@ public bool IsRespawning { get; set; } = false;
             if (_mainCamera == null)
             {
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+            }
+
+            // Grab or add AudioSource
+            if (!TryGetComponent(out m_AudioSource))
+            {
+                m_AudioSource = gameObject.AddComponent<AudioSource>();
+                m_AudioSource.spatialBlend = 1.0f; // Enable 3D sound
+                m_AudioSource.playOnAwake = false;
             }
         }
 
@@ -495,6 +506,7 @@ public bool IsRespawning { get; set; } = false;
                 Debug.Log("Player attacked!");
 
                 PerformAttackDamage();
+                PlayAttackSound();
             }
         }
 
@@ -517,6 +529,14 @@ public bool IsRespawning { get; set; } = false;
                     enemyHealth.TakeDamage(m_AttackDamage);
                     Debug.Log($"[PlayerAttack] Hit {col.name} for {m_AttackDamage} damage!");
                 }
+            }
+        }
+
+        public void PlayAttackSound()
+        {
+            if (m_AttackAudioClip != null && m_AudioSource != null)
+            {
+                m_AudioSource.PlayOneShot(m_AttackAudioClip, m_AttackAudioVolume);
             }
         }
 

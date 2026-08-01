@@ -18,14 +18,26 @@ public class DrawAggroAction : UtilityAction
     [Header("Navigation Settings")]
     [SerializeField] private float m_MovementSpeed = 5.0f;
 
+    [Header("Audio Settings")]
+    [SerializeField] private AudioClip m_AttackAudioClip;
+    [Range(0f, 1f)] [SerializeField] private float m_AttackAudioVolume = 0.8f;
+
     // Internal state
     private Transform m_CurrentTargetEnemy;
     private NavMeshAgent m_NavAgent;
+    private AudioSource m_AudioSource;
     private float m_LastAttackTime;
 
     private void Awake()
     {
         ActionName = "Draw Aggro / Protect Player";
+
+        if (!TryGetComponent(out m_AudioSource))
+        {
+            m_AudioSource = gameObject.AddComponent<AudioSource>();
+            m_AudioSource.spatialBlend = 1.0f; // Enable 3D sound
+            m_AudioSource.playOnAwake = false;
+        }
     }
 
     public override float EvaluateUtility(PlayerProfile profile, Transform agent, Transform player)
@@ -115,7 +127,7 @@ public class DrawAggroAction : UtilityAction
         if (m_CurrentTargetEnemy.TryGetComponent<EnemyHealth>(out var health))
         {
             health.TakeDamage(m_Damage);
-
+            PlayAttackSound();
             if (health.IsDead)
             {
                 m_CurrentTargetEnemy = null;
@@ -126,6 +138,15 @@ public class DrawAggroAction : UtilityAction
             }
         }
     }
+
+    public void PlayAttackSound()
+    {
+        if (m_AttackAudioClip != null && m_AudioSource != null)
+        {
+            m_AudioSource.PlayOneShot(m_AttackAudioClip, m_AttackAudioVolume);
+        }
+    }
+
 
     private Transform FindPriorityTarget(Vector3 origin, Transform player)
     {

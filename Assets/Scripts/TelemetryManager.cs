@@ -3,9 +3,6 @@ using StarterAssets;
 
 public class TelemetryManager : MonoBehaviour
 {
-    [Header("EMA Tuning")]
-    [Tooltip("Lower values make the companion react slower to habit changes, higher values make it jumpy.")]
-    [SerializeField] private float m_EmaAlpha = 0.5f;
 
     [Header("Telemetry Settings")]
     [SerializeField] private LayerMask m_EnemyLayer;
@@ -40,7 +37,7 @@ public class TelemetryManager : MonoBehaviour
         // High attack (e.g. 2.0 to 5.0) = builds quickly when performing the action
         // Low decay (e.g. 0.1 to 0.5) = drops VERY slowly when idle
         
-        m_AggressionFilter  = new EMAFilter(3.0f, 0.13f);
+        m_AggressionFilter  = new EMAFilter(3.5f, 0.13f);
         m_StealthFilter     = new EMAFilter(3.0f, 0.05f);
         m_ExplorationFilter = new EMAFilter(2.0f, 0.08f);
         m_CautionFilter     = new EMAFilter(3.0f, 0.05f);
